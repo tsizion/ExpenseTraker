@@ -5,6 +5,6 @@ void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(useMaterial3: true),
-    home: Expenses(),
+    home: const Expenses(),
   ));
 }

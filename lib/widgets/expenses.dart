@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:expense_tacker/widgets/expensesList/expenses_list.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tacker/model/expense.dart';
@@ -25,7 +27,16 @@ class _ExpensesState extends State<Expenses> {
   ];
   void _openAddExpense() {
     showModalBottomSheet(
-        context: context, builder: (ctx) => const NewExpense());
+        context: context,
+        builder: (ctx) => NewExpense(
+              onAddExpense: addExpense,
+            ));
+  }
+
+  void addExpense(Expense expense) {
+    setState(() {
+      _resisteredExpenses.add(expense);
+    });
   }
 
   @override
