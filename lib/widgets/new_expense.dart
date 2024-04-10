@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tacker/model/expense.dart';
 
 class NewExpense extends StatefulWidget {
   const NewExpense({super.key});
@@ -10,6 +11,8 @@ class NewExpense extends StatefulWidget {
 class __NewExpenseState extends State<NewExpense> {
   final _textController = TextEditingController();
   final _amountController = TextEditingController();
+  DateTime? _selectedDate;
+
   @override
   void dispose() {
     _textController.dispose();
@@ -17,12 +20,16 @@ class __NewExpenseState extends State<NewExpense> {
     super.dispose();
   }
 
-  void _presentDatePicker() {
+  void _presentDatePicker() async {
     final now = DateTime.now();
     final firstDate = DateTime(now.year - 1, now.month, now.day);
     final lastDate = DateTime(now.year + 5, now.month, now.day);
 
-    showDatePicker(context: context, firstDate: firstDate, lastDate: lastDate);
+    final pickedDate = await showDatePicker(
+        context: context, firstDate: firstDate, lastDate: lastDate);
+    setState(() {
+      _selectedDate = pickedDate;
+    });
   }
 
   @override
@@ -31,12 +38,10 @@ class __NewExpenseState extends State<NewExpense> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          Expanded(
-            child: TextField(
-              controller: _textController,
-              maxLength: 50,
-              decoration: const InputDecoration(label: Text("Title")),
-            ),
+          TextField(
+            controller: _textController,
+            maxLength: 50,
+            decoration: const InputDecoration(label: Text("Title")),
           ),
           Row(
             children: [
@@ -53,22 +58,34 @@ class __NewExpenseState extends State<NewExpense> {
               const SizedBox(
                 width: 16,
               ),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text("Selected Date"),
-                    IconButton(
-                        onPressed: _presentDatePicker,
-                        icon: const Icon(Icons.calendar_month))
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(_selectedDate == null
+                      ? 'Selected Date'
+                      : formatter.format(_selectedDate!)),
+                  IconButton(
+                      onPressed: _presentDatePicker,
+                      icon: const Icon(Icons.calendar_month))
+                ],
               )
             ],
           ),
           Row(
             children: [
+              DropdownButton(
+                  items: Category.values
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e.name),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (val) {
+                    print(val);
+                  }),
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
